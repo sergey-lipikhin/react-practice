@@ -53,7 +53,7 @@ function getVisibleProducts(isAllSelected, userId, query) {
 
 export const App = () => {
   const [isAllUsersSelected, setIsAllUsersSelected] = useState(true);
-  const [selectedUserId, setSelectedUserId] = useState('');
+  const [selectedUserId, setSelectedUserId] = useState(0);
 
   const [searchQuery, setSearchQuery] = useState('');
 
