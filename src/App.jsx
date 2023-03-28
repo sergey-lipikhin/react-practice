@@ -47,7 +47,31 @@ function filerProductsByQuery(productsToFilter, query) {
   ));
 }
 
-function getVisibleProducts(isAllSelected, userId, query) {
+function filerProductsByCategory(
+  productsToFilter,
+  isAllCategoriesSelected,
+  selectedCategories,
+) {
+  if (isAllCategoriesSelected) {
+    return productsToFilter;
+  }
+
+  const onlySelectedCategoriesId = selectedCategories
+    .filter(category => category.isSelected)
+    .map(category => category.id);
+
+  return productsToFilter.filter(product => (
+    onlySelectedCategoriesId.includes(product.category.id)
+  ));
+}
+
+function getVisibleProducts(
+  isAllSelected,
+  userId,
+  query,
+  isAllCategoriesSelected,
+  selectedCategories,
+) {
   let visibleProducts = [...products];
 
   visibleProducts
@@ -55,6 +79,10 @@ function getVisibleProducts(isAllSelected, userId, query) {
 
   visibleProducts
     = filerProductsByQuery(visibleProducts, query);
+
+  visibleProducts
+    = filerProductsByCategory(visibleProducts,
+      isAllCategoriesSelected, selectedCategories);
 
   return visibleProducts;
 }
@@ -72,6 +100,7 @@ export const App = () => {
   const resetAllFilters = () => {
     setIsAllUsersSelected(true);
     setSearchQuery('');
+    selectAllCategories();
   };
 
   const selectAllCategories = () => {
@@ -101,7 +130,8 @@ export const App = () => {
   };
 
   const visibleProducts
-    = getVisibleProducts(isAllUsersSelected, selectedUserId, searchQuery);
+    = getVisibleProducts(isAllUsersSelected, selectedUserId, searchQuery,
+      isAllCategoriesSelected, selectedCategories);
 
   return (
     <div className="section">
