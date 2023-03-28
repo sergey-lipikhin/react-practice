@@ -66,12 +66,38 @@ export const App = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const [isAllCategoriesSelected, setIsAllCategoriesSelected] = useState(true);
-  // const [selectedCategories, setSelectedCategories]
-  //   = useState(categoriesToFilter);
+  const [selectedCategories, setSelectedCategories]
+    = useState(categoriesToFilter);
 
   const resetAllFilters = () => {
     setIsAllUsersSelected(true);
     setSearchQuery('');
+  };
+
+  const selectAllCategories = () => {
+    setIsAllCategoriesSelected(true);
+    setSelectedCategories(prevSelectedCategories => (
+      [...prevSelectedCategories.map(prevSelectedCategory => ({
+        ...prevSelectedCategory,
+        isSelected: false,
+      }))]
+    ));
+  };
+
+  const selectCategory = (selectedCategoryId) => {
+    setIsAllCategoriesSelected(false);
+    setSelectedCategories(prevSelectedCategories => (
+      [...prevSelectedCategories.map(prevSelectedCategory => (
+        prevSelectedCategory.id === selectedCategoryId
+          ? {
+            ...prevSelectedCategory,
+            isSelected: !prevSelectedCategory.isSelected,
+          }
+          : {
+            ...prevSelectedCategory,
+          }
+      ))]
+    ));
   };
 
   const visibleProducts
@@ -164,16 +190,12 @@ export const App = () => {
                     'is-outlined': !isAllCategoriesSelected,
                   },
                 )}
-                onClick={() => (
-                  setIsAllCategoriesSelected(prevIsAllCategoriesSelected => (
-                    !prevIsAllCategoriesSelected
-                  ))
-                )}
+                onClick={selectAllCategories}
               >
                 All
               </a>
 
-              {categoriesToFilter.map(category => (
+              {selectedCategories.map(category => (
                 <a
                   key={category.id}
                   data-cy="Category"
@@ -186,6 +208,7 @@ export const App = () => {
                     },
                   )}
                   href="#/"
+                  onClick={() => selectCategory(category.id)}
                 >
                   {category.title}
                 </a>
