@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.scss';
+import classNames from 'classnames';
 import { ProductTable } from './components/ProductTable';
 
 import usersFromServer from './api/users';
@@ -22,8 +23,32 @@ const products = productsFromServer.map((product) => {
   };
 });
 
+function filterProductsByUser(isAllSelected, userId) {
+  if (isAllSelected) {
+    return [...products];
+  }
+
+  return products.filter(product => (
+    product.user.id === userId
+  ));
+}
+
+// function getVisibleProducts(isAllquery) {
+//   const visibleProducts = products.filter(product => (
+//     product.name.toLowerCase().includes(query.trim().toLowerCase())
+//   ));
+
+//   return visibleProducts;
+// }
+
 export const App = () => {
-  const visibleProducts = [...products];
+  const [isAllUsersSelected, setIsAllUsersSelected] = useState(true);
+  const [selectedUserId, setSelectedUserId] = useState('');
+
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const visibleProducts
+    = filterProductsByUser(isAllUsersSelected, selectedUserId);
 
   return (
     <div className="section">
@@ -38,31 +63,35 @@ export const App = () => {
               <a
                 data-cy="FilterAllUsers"
                 href="#/"
+                className={classNames(
+                  {
+                    'is-active': isAllUsersSelected,
+                  },
+                )}
+                onClick={() => {
+                  setIsAllUsersSelected(true);
+                }}
               >
                 All
               </a>
-
-              <a
-                data-cy="FilterUser"
-                href="#/"
-              >
-                User 1
-              </a>
-
-              <a
-                data-cy="FilterUser"
-                href="#/"
-                className="is-active"
-              >
-                User 2
-              </a>
-
-              <a
-                data-cy="FilterUser"
-                href="#/"
-              >
-                User 3
-              </a>
+              {usersFromServer.map(user => (
+                <a
+                  data-cy="FilterUser"
+                  href="#/"
+                  className={classNames(
+                    {
+                      'is-active': !isAllUsersSelected
+                      && user.id === selectedUserId,
+                    },
+                  )}
+                  onClick={() => {
+                    setIsAllUsersSelected(false);
+                    setSelectedUserId(user.id);
+                  }}
+                >
+                  {user.name}
+                </a>
+              ))}
             </p>
 
             <div className="panel-block">
@@ -72,7 +101,10 @@ export const App = () => {
                   type="text"
                   className="input"
                   placeholder="Search"
-                  value="qwe"
+                  value={searchQuery}
+                  onChange={event => (
+                    setSearchQuery(event.target.value)
+                  )}
                 />
 
                 <span className="icon is-left">
