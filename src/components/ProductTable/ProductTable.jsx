@@ -84,19 +84,19 @@ export const ProductTable = (props) => {
               </td>
 
               <td data-cy="ProductCategory">
-                {`${category.icon} - ${category.title}`}
+                {`${category?.icon} - ${category?.title}`}
               </td>
 
               <td
                 data-cy="ProductUser"
                 className={classNames(
                   {
-                    'has-text-link': user.sex === 'm',
-                    'has-text-danger': user.sex === 'f',
+                    'has-text-link': user?.sex === 'm',
+                    'has-text-danger': user?.sex === 'f',
                   },
                 )}
               >
-                {user.name}
+                {user?.name}
               </td>
             </tr>
           );

@@ -23,13 +23,21 @@ const products = productsFromServer.map((product) => {
   };
 });
 
+const categoriesToFilter = categoriesFromServer.map(({ id, title }) => (
+  {
+    id,
+    title,
+    isSelected: false,
+  }
+));
+
 function filterProductsByUser(productsToFilter, isAllSelected, userId) {
   if (isAllSelected) {
     return productsToFilter;
   }
 
   return productsToFilter.filter(product => (
-    product.user.id === userId
+    product.user?.id === userId
   ));
 }
 
@@ -56,6 +64,10 @@ export const App = () => {
   const [selectedUserId, setSelectedUserId] = useState(0);
 
   const [searchQuery, setSearchQuery] = useState('');
+
+  const [isAllCategoriesSelected, setIsAllCategoriesSelected] = useState(true);
+  // const [selectedCategories, setSelectedCategories]
+  //   = useState(categoriesToFilter);
 
   const resetAllFilters = () => {
     setIsAllUsersSelected(true);
@@ -91,20 +103,21 @@ export const App = () => {
               </a>
               {usersFromServer.map(user => (
                 <a
+                  key={user.id}
                   data-cy="FilterUser"
                   href="#/"
                   className={classNames(
                     {
                       'is-active': !isAllUsersSelected
-                      && user.id === selectedUserId,
+                      && user?.id === selectedUserId,
                     },
                   )}
                   onClick={() => {
                     setIsAllUsersSelected(false);
-                    setSelectedUserId(user.id);
+                    setSelectedUserId(user?.id);
                   }}
                 >
-                  {user.name}
+                  {user?.name}
                 </a>
               ))}
             </p>
@@ -143,41 +156,40 @@ export const App = () => {
               <a
                 href="#/"
                 data-cy="AllCategories"
-                className="button is-success mr-6 is-outlined"
+                className={classNames(
+                  'button',
+                  'is-success',
+                  'mr-6',
+                  {
+                    'is-outlined': !isAllCategoriesSelected,
+                  },
+                )}
+                onClick={() => (
+                  setIsAllCategoriesSelected(prevIsAllCategoriesSelected => (
+                    !prevIsAllCategoriesSelected
+                  ))
+                )}
               >
                 All
               </a>
 
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 1
-              </a>
-
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1"
-                href="#/"
-              >
-                Category 2
-              </a>
-
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 3
-              </a>
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1"
-                href="#/"
-              >
-                Category 4
-              </a>
+              {categoriesToFilter.map(category => (
+                <a
+                  key={category.id}
+                  data-cy="Category"
+                  className={classNames(
+                    'button',
+                    'mr-2',
+                    'my-1',
+                    {
+                      'is-info': category.isSelected,
+                    },
+                  )}
+                  href="#/"
+                >
+                  {category.title}
+                </a>
+              ))}
             </div>
 
             <div className="panel-block">
